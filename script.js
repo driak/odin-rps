@@ -38,7 +38,7 @@ function isScissors(selection) {
 }
 
 function availableWinningCombo(playerSelection, computerSelection) {
-  return ( ( isRock(playerSelection)     && isScissors(computerSelection) ) 
+  return ( ( isRock(playerSelection)      && isScissors(computerSelection) ) 
         ||( isPaper(playerSelection)      && isRock(computerSelection) )
         ||( isScissors(playerSelection)   && isPaper(computerSelection) ) )
 }
@@ -63,13 +63,61 @@ function resultCommentaryPart(playerSelection, computerSelection) {
   }
 }
 
-function playRound(playerSelection, computerSelection) {
-  let lowercasedPlayerSelection = playerSelection.toLowerCase()
-
-  return resultPart(lowercasedPlayerSelection, computerSelection)
-       + resultCommentaryPart(lowercasedPlayerSelection, computerSelection)
+function scoresResult(playerScore, computerScore) {
+  return `Player: ${playerScore} Computer: ${computerScore}`
 }
 
-let computerSelection = getComputerChoice() 
+function isInvalidSelection(selection) {
+  return !( ['rock', 'paper', 'scissors'].includes( selection.toLowerCase() ) )
+}
+  
+function validateInput(selection) {
+    let toBeValidatedSelection = selection
 
-console.log( playRound('rock', computerSelection) )
+    while ( isInvalidSelection(toBeValidatedSelection) ) {
+      toBeValidatedSelection = prompt(`That's not rock, paper, or scissors. Try again :)`) 
+    } 
+
+  let validatedSelection = toBeValidatedSelection
+  return validatedSelection
+} 
+
+function playARound() {
+  let playerSelection = validateInput( prompt('Enter: rock, paper, or scissors') ) 
+  let computerSelection = getComputerChoice()
+  let roundResultMessage = resultPart(playerSelection, computerSelection)
+                  + resultCommentaryPart(playerSelection, computerSelection) 
+
+  return roundResultMessage
+}
+
+function playManyRounds(number_of_rounds) {
+  let playerScore   = 0
+  let computerScore = 0
+
+  for (let i = 1; i <= number_of_rounds; i++) {
+    let roundResultMessage = playARound()
+
+    if ( roundResultMessage.startsWith('You Win') ) {
+      playerScore++ 
+    } else if ( roundResultMessage.startsWith('You Lose') ) {
+      computerScore++
+    }
+
+    alert( roundResultMessage + '\n\n' + scoresResult(playerScore, computerScore) )
+  }
+
+  if ( playerScore > computerScore ) {
+    alert('Player Wins!')
+  } else if ( computerScore > playerScore) {
+    alert('Computers shall rule this planet')
+  } else {
+    alert('It\'s a tie between humanity and machines!')
+  }
+}
+
+function playRPS() {
+  playManyRounds(5) 
+}
+
+playRPS()
