@@ -44,6 +44,8 @@ function availableWinningCombo(playerSelection, computerSelection) {
 }
 
 function resultPart(playerSelection, computerSelection) {
+  playerSelection = playerSelection.toLowerCase()
+
   if ( availableWinningCombo(playerSelection, computerSelection)) {
     return "You Win!" + " "
   } else if ( playerSelection === computerSelection) {
@@ -54,6 +56,8 @@ function resultPart(playerSelection, computerSelection) {
 }
 
 function resultCommentaryPart(playerSelection, computerSelection) {
+  playerSelection = playerSelection.toLowerCase()
+
   if ( availableWinningCombo(playerSelection, computerSelection) ){
     return `${capitalize(playerSelection)} beats ${capitalize(computerSelection)}`
   } else if ( playerSelection === computerSelection) {
@@ -82,9 +86,9 @@ function validateInput(selection) {
   return validatedSelection
 } 
 
-function playARound() {
-  let playerSelection = validateInput( prompt('Enter: rock, paper, or scissors') ) 
-  let computerSelection = getComputerChoice()
+function playARound( playerSelection = validateInput( prompt('Enter: rock, paper, or scissors') ) ) {
+  let computerSelection = getComputerChoice() 
+
   let roundResultMessage = resultPart(playerSelection, computerSelection)
                   + resultCommentaryPart(playerSelection, computerSelection) 
 
@@ -120,4 +124,60 @@ function playRPS() {
   playManyRounds(5) 
 }
 
-playRPS()
+rockButton     = document.createElement('button')
+paperButton    = document.createElement('button')
+scissorsButton = document.createElement('button')
+
+playerScoreDiv = document.createElement('div')
+computerScoreDiv = document.createElement('div')
+scoresDiv = document.createElement('div')
+
+rockButton.textContent = "Rock"
+paperButton.textContent = "Paper"
+scissorsButton.textContent = "Scissors"
+playerScoreDiv.textContent = 'Player: 0'
+computerScoreDiv.textContent = 'Computer: 0'
+
+let roundCount = 0
+
+function buttonCallback(event) {
+  roundCount++ 
+
+  let playerSelection = event.target.textContent
+
+  let roundResultMessage = playARound(playerSelection)
+
+  let playerScoreContent = playerScoreDiv.textContent 
+  let computerScoreContent = computerScoreDiv.textContent 
+  let playerScore = Number(  playerScoreContent.match(/\d+/g)[0] )
+  let computerScore = Number(  computerScoreContent.match(/\d+/g)[0] )
+
+  alert( roundResultMessage )
+
+  if ( roundResultMessage.startsWith('You Win') ) {
+    playerScoreDiv.textContent = playerScoreContent.slice(0, -1) + ++playerScore 
+  } else if ( roundResultMessage.startsWith('You Lose') ) {
+    computerScoreDiv.textContent = computerScoreContent.slice(0, -1) + ++computerScore
+  }
+  
+  if ( roundCount === 5) {
+    document.body.removeEventListener('click', buttonCallback)
+
+    if ( playerScore > computerScore ) {
+      alert('Player Wins!')
+    } else if ( computerScore > playerScore) {
+      alert('Computers shall rule this planet')
+    } else {
+      alert('It\'s a tie between humanity and machines!')
+    }
+  }
+}
+
+document.body.addEventListener('click', buttonCallback)
+
+document.body.appendChild(rockButton)
+document.body.appendChild(paperButton)
+document.body.appendChild(scissorsButton)
+scoresDiv.appendChild(playerScoreDiv)
+scoresDiv.appendChild(computerScoreDiv)
+document.body.appendChild(scoresDiv)
